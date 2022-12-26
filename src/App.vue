@@ -22,6 +22,7 @@
           <input type="text" v-model="contact.email">
         </div>
         <div class="btn">
+          <button class="btn__edit" @click="editContact()">Изменить</button>
           <button class="btn__delete" @click="removeContact(index)">Удалить</button>
         </div>
       </div>
@@ -36,6 +37,7 @@ export default {
   name: 'App',
   data() {
     return {
+      editButton: true,
       contacts: [
         { id: 1, name: 'John', num: +998912831617, email: 'jonnn@gmail.com' },
         { id: 2, name: 'Mice', num: +998912831617, email: 'test@gmail.com' },
@@ -49,6 +51,31 @@ export default {
       email: ''
     }
   },
+
+  created() {
+    const contactsData = localStorage.getItem('contact-list')
+
+    if (contactsData) {
+      this.contacts = JSON.parse(contactsData)
+    }
+  },
+
+
+
+
+  mounted() {
+    if (localStorage.getItem('contact-list')) {
+      try {
+        this.contacts = JSON.parse(localStorage.getItem('contact-list'));
+      } catch (e) {
+        localStorage.removeItem('contact-list');
+      }
+    }
+  },
+
+
+
+
   methods: {
     addContact() {
       const newContact = {
@@ -59,14 +86,30 @@ export default {
       } 
       if (this.name.length && this.num.length && this.email.length) {
         this.contacts.push(newContact)
+
+        localStorage.setItem('contact-list', JSON.stringify(this.contacts))
+
       }
       this.num = ''
       this.name = ''
       this.email = ''
+      this.saveContacts()
     }, 
+
     removeContact(index) {
       this.contacts.splice(index, 1)
+      this.saveContacts()
     },
+
+    editContact() {
+      this.saveContacts()
+      alert('Данные успешно изменены и сохранены')
+    },
+
+    saveContacts() {
+      const parsed = JSON.stringify(this.contacts);
+      localStorage.setItem('contact-list', parsed);
+    }
   }
 }
 </script>
